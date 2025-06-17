@@ -1,10 +1,102 @@
 {% extends "core/base.html" %}
 {% block content %}
 <div class="page-wrapper">
-    <div class="container">
-        <h2>🎹 Teacher Dashboard</h2>
-        <p>Welcome, {{ user.username }}!</p>
-        <p>Here you can manage your students, schedule lessons, and view submissions.</p>
+  <div class="container">
+    <h2>🎹 Welcome, {{ user.username }}</h2>
+    <p>This is your teacher dashboard. Manage your lesson requests, schedules, and updates.</p>
+
+    <!-- APPROVED LESSONS -->
+    <div class="dashboard-section">
+      <h3>✅ Approved Lessons</h3>
+      {% if approved_lessons %}
+        <ul class="lesson-list">
+          {% for lesson in approved_lessons %}
+            <li>
+              <strong>{{ lesson.title }}</strong><br>
+              <small>
+                For <strong>{{ lesson.student.username }}</strong><br>
+                {{ lesson.date }} at {{ lesson.time }}
+              </small>
+              <p>{{ lesson.description|truncatechars:100 }}</p>
+              <a href="{% url 'lesson_detail' lesson.id %}" class="btn btn-outline">View</a>
+              <a href="{% url 'cancel_lesson_teacher' lesson.id %}" class="btn btn-outline danger" style="margin-left: 10px;">Cancel</a>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="muted">No approved lessons yet.</p>
+      {% endif %}
     </div>
+
+    <!-- PENDING REQUESTS -->
+    <div class="dashboard-section">
+      <h3>🕒 Pending Requests</h3>
+      {% if pending_lessons %}
+        <ul class="lesson-list">
+          {% for lesson in pending_lessons %}
+            <li>
+              <strong>{{ lesson.title }}</strong><br>
+              <small>
+                From <strong>{{ lesson.student.username }}</strong><br>
+                {{ lesson.date }} at {{ lesson.time }}
+              </small>
+              <p>{{ lesson.description|truncatechars:100 }}</p>
+              <a href="{% url 'approve_lesson' lesson.id %}" class="btn btn-primary">Approve</a>
+              <a href="{% url 'decline_lesson' lesson.id %}" class="btn btn-outline danger" style="margin-left: 10px;">Decline</a>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="muted">No pending lesson requests.</p>
+      {% endif %}
+    </div>
+
+    <!-- DECLINED -->
+    <div class="dashboard-section">
+      <h3>❌ Declined Lessons</h3>
+      {% if declined_lessons %}
+        <ul class="lesson-list">
+          {% for lesson in declined_lessons %}
+            <li>
+              <strong>{{ lesson.title }}</strong><br>
+              <small>
+                Status: <span class="status declined">Declined</span><br>
+                {{ lesson.date }} at {{ lesson.time }}<br>
+                Student: {{ lesson.student.username }}
+              </small>
+              <p>{{ lesson.description|truncatechars:100 }}</p>
+              <a href="{% url 'lesson_detail' lesson.id %}" class="btn btn-outline">View</a>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="muted">No declined lessons.</p>
+      {% endif %}
+    </div>
+
+    <!-- CANCELLED -->
+    <div class="dashboard-section">
+      <h3>🚫 Cancelled Lessons</h3>
+      {% if cancelled_lessons %}
+        <ul class="lesson-list">
+          {% for lesson in cancelled_lessons %}
+            <li>
+              <strong>{{ lesson.title }}</strong><br>
+              <small>
+                Status: <span class="status {{ lesson.status }}">{{ lesson.status|title }}</span><br>
+                {{ lesson.date }} at {{ lesson.time }}<br>
+                Student: {{ lesson.student.username }}
+              </small>
+              <p>{{ lesson.description|truncatechars:100 }}</p>
+              <a href="{% url 'lesson_detail' lesson.id %}" class="btn btn-outline">View</a>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="muted">No cancelled lessons.</p>
+      {% endif %}
+    </div>
+
+  </div>
 </div>
 {% endblock %}

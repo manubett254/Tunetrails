@@ -1,0 +1,12 @@
+{% extends "core/base.html" %}
+{% block content %}
+<div class="page-wrapper">
+  <div class="container form-container">
+    <h2>{{ lesson.title }}</h2>
+    <p><strong>Date:</strong> {{ lesson.date }} at {{ lesson.time }}</p>
+    <p><strong>Status:</strong> {{ lesson.status }}</p>
+    <p><strong>Description:</strong></p>
+    <p>{{ lesson.description }}</p>
+  </div>
+</div>
+{% endblock %}

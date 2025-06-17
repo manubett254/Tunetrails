@@ -1,8 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from .models import User, TeacherProfile
-from .models import TeacherProfile, INSTRUMENT_CHOICES
-
+from .models import TeacherProfile, INSTRUMENT_CHOICES, Lesson
 class UserRegisterForm(UserCreationForm):
     is_teacher = forms.BooleanField(required=False, label="Registering as a teacher?")
 
@@ -33,3 +32,19 @@ class TeacherProfileForm(forms.ModelForm):
         # Join selected instruments into a comma-separated string
         instruments = self.cleaned_data['instruments_taught']
         return ', '.join(instruments)
+    
+
+
+
+class LessonRequestForm(forms.ModelForm):
+    time = forms.TimeField(
+        widget=forms.TimeInput(format='%H:%M', attrs={'type': 'time'}),
+        label="Preferred Time"
+    )
+
+    class Meta:
+        model = Lesson
+        fields = ['title', 'description', 'date', 'time']
+        widgets = {
+            'date': forms.DateInput(attrs={'type': 'date'}),
+        }

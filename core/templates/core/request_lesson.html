@@ -1,0 +1,13 @@
+{% extends "core/base.html" %}
+{% block content %}
+<div class="page-wrapper">
+  <div class="container form-container">
+    <h2>Request Lesson with {{ teacher.username }}</h2>
+    <form method="post">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit" class="btn btn-primary">Request Lesson</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

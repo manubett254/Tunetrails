@@ -428,3 +428,107 @@ a {
         margin-top: 20px;
     }
 }
+
+/* student dashboard */
+.dashboard-section {
+  margin-top: 40px;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+}
+
+.dashboard-section h3 {
+  color: var(--primary-color);
+  margin-bottom: 10px;
+}
+
+.lesson-list,
+.assignment-list,
+.teacher-list {
+  list-style: none;
+  padding: 0;
+  margin: 15px 0;
+}
+
+.lesson-list li,
+.assignment-list li,
+.teacher-list li {
+  padding: 15px;
+  border: 1px solid var(--light-gray);
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+.muted {
+  color: var(--gray-color);
+  font-style: italic;
+}
+
+
+.lesson-list li {
+  padding: 15px;
+  border: 1px solid var(--light-gray);
+  border-radius: 8px;
+  margin-bottom: 10px;
+  background-color: #fff;
+}
+
+.status {
+  padding: 2px 8px;
+  border-radius: 5px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.status.pending {
+  background-color: var(--warning-color);
+  color: white;
+}
+
+.status.approved {
+  background-color: var(--success-color);
+  color: white;
+}
+
+.status.declined {
+  background-color: var(--danger-color);
+  color: white;
+}
+
+.lesson-list li .status {
+  float: right;
+}
+
+
+.alert {
+  padding: 10px 20px;
+  border-radius: 5px;
+  margin-bottom: 15px;
+  font-weight: 500;
+}
+
+.alert-success {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.alert-info {
+  background-color: #d1ecf1;
+  color: #0c5460;
+}
+
+.alert-error, .alert-danger {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+.btn.danger {
+  background-color: var(--danger-color);
+  color: white;
+  border: 2px solid var(--danger-color);
+}
+
+.btn.danger:hover {
+  background-color: #c0392b;
+  border-color: #c0392b;
+}

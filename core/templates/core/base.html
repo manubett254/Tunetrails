@@ -2,113 +2,141 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TuneTrails - Master Your Musical Journey</title>
-    <link rel="stylesheet" href="{% static 'core/main.css' %}">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}TuneTrails - Master Your Musical Journey{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'core/main.css' %}" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 </head>
 <body>
-    <!-- Top Navigation Bar -->
-    <header class="main-header">
-        <div class="container">
-            <div class="logo">
-                <i class="fas fa-music"></i>
-                <span>TuneTrails</span>
-            </div>
-            <nav class="main-nav">
-                <ul>
-                    <li><a href="{% url 'home' %}" class="nav-link"><i class="fas fa-home"></i> Home</a></li>
-                    <li><a href="#" class="nav-link"><i class="fas fa-guitar"></i> Courses</a></li>
-                    <li><a href="{% url 'teacher_list' %}" class="nav-link"><i class="fas fa-chalkboard-teacher"></i> Instructors</a></li>
-                    <li><a href="#" class="nav-link"><i class="fas fa-headphones"></i> Resources</a></li>
-                </ul>
-            </nav>
-            {% if user.is_authenticated %}
-            <div class="profile-wrapper">
-            <div class="profile-trigger">
-                👤 {{ user.username }} <i class="fas fa-caret-down"></i>
-            </div>
-            <ul class="dropdown-menu">
-                <li><a href="{% url 'teacher_dashboard' %}">Dashboard</a></li>
-                <li><a href="{% url 'teacher_profile_view' %}">Profile</a></li>
-                <li><a href="{% url 'logout' %}">Logout</a></li>
-            </ul>
-            </div>
-            {% endif %}
+  <!-- Top Navigation Bar -->
+  <header class="main-header">
+    <div class="container">
+      <div class="logo">
+        <i class="fas fa-music"></i>
+        <span>TuneTrails</span>
+      </div>
 
+      <!-- Mobile menu toggle -->
+      <button class="mobile-menu-btn" onclick="toggleMenu()">
+        <i class="fas fa-bars"></i>
+      </button>
 
-            <div class="auth-buttons">
-                {% if user.is_authenticated %}
-                    <a href="{% url 'logout' %}" class="btn btn-outline"><i class="fas fa-sign-out-alt"></i> Logout</a>
-                {% else %}
-                    <a href="{% url 'login' %}" class="btn btn-outline"><i class="fas fa-sign-in-alt"></i> Login</a>
-                    <a href="{% url 'register' %}" class="btn btn-primary"><i class="fas fa-user-plus"></i> Register</a>
-                {% endif %}
-            </div>
+      <nav class="main-nav" id="mainNav">
+        <ul>
+          <li><a href="{% url 'home' %}" class="nav-link"><i class="fas fa-home"></i> Home</a></li>
+          <li><a href="#" class="nav-link"><i class="fas fa-guitar"></i> Courses</a></li>
+          <li><a href="{% url 'teacher_list' %}" class="nav-link"><i class="fas fa-chalkboard-teacher"></i> Instructors</a></li>
+          <li><a href="#" class="nav-link"><i class="fas fa-headphones"></i> Resources</a></li>
+        </ul>
+      </nav>
+
+      {% if user.is_authenticated %}
+      <div class="profile-wrapper">
+        <div class="profile-trigger" onclick="toggleDropdown()">
+          👤 {{ user.username }} <i class="fas fa-caret-down"></i>
         </div>
-    </header>
+        <ul class="dropdown-menu" id="profileDropdown">
+          {% if user.is_teacher %}
+            <li><a href="{% url 'teacher_dashboard' %}">Dashboard</a></li>
+            <li><a href="{% url 'teacher_profile_view' %}">Profile</a></li>
+          {% else %}
+            <li><a href="{% url 'student_dashboard' %}">Dashboard</a></li>
+          {% endif %}
+          <li><a href="{% url 'logout' %}">Logout</a></li>
+        </ul>
+      </div>
+      {% endif %}
 
-    <!-- Hero Section (can be overridden in child templates) -->
-    {% block hero %}{% endblock %}
-    
-    <!-- Main Content -->
-    <main class="main-content">
-        {% block content %}{% endblock %}
-    </main>
+      <div class="auth-buttons">
+        {% if user.is_authenticated %}
+          <a href="{% url 'logout' %}" class="btn btn-outline"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        {% else %}
+          <a href="{% url 'login' %}" class="btn btn-outline"><i class="fas fa-sign-in-alt"></i> Login</a>
+          <a href="{% url 'register' %}" class="btn btn-primary"><i class="fas fa-user-plus"></i> Register</a>
+        {% endif %}
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section (optional) -->
+  {% block hero %}{% endblock %}
+
+  <!-- Main Content -->
+  <main class="main-content">
     {% if messages %}
-    <ul class="messages">
-        {% for message in messages %}
-        <li class="alert alert-success">{{ message }}</li>
-        {% endfor %}
-    </ul>
+    <div class="container">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+      {% endfor %}
+    </div>
     {% endif %}
 
+    {% block content %}{% endblock %}
+  </main>
 
-    <!-- Footer -->
-    <footer class="main-footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h3>TuneTrails</h3>
-                    <p>Master your musical journey with our comprehensive online learning platform.</p>
-                    <div class="social-icons">
-                        <a href="#"><i class="fab fa-facebook"></i></a>
-                        <a href="#"><i class="fab fa-twitter"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-youtube"></i></a>
-                    </div>
-                </div>
-                <div class="footer-section">
-                    <h3>Quick Links</h3>
-                    <ul>
-                        <li><a href="{% url 'home' %}">Home</a></li>
-                        <li><a href="#">Courses</a></li>
-                        <li><a href="#">Pricing</a></li>
-                        <li><a href="#">Blog</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h3>Support</h3>
-                    <ul>
-                        <li><a href="#">FAQ</a></li>
-                        <li><a href="#">Contact Us</a></li>
-                        <li><a href="#">Privacy Policy</a></li>
-                        <li><a href="#">Terms of Service</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2023 TuneTrails. All rights reserved.</p>
-            </div>
+  <!-- Footer -->
+  <footer class="main-footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>TuneTrails</h3>
+          <p>Master your musical journey with our comprehensive online learning platform.</p>
+          <div class="social-icons">
+            <a href="#"><i class="fab fa-facebook"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-youtube"></i></a>
+          </div>
         </div>
-    </footer>
+        <div class="footer-section">
+          <h3>Quick Links</h3>
+          <ul>
+            <li><a href="{% url 'home' %}">Home</a></li>
+            <li><a href="#">Courses</a></li>
+            <li><a href="#">Pricing</a></li>
+            <li><a href="#">Blog</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h3>Support</h3>
+          <ul>
+            <li><a href="#">FAQ</a></li>
+            <li><a href="#">Contact Us</a></li>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Terms of Service</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2025 TuneTrails. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
 
-    <!-- Scripts -->
-    <script src="{% static 'core/main.js' %}" defer></script>
+  <!-- JS -->
+  <script>
+    function toggleMenu() {
+      document.getElementById("mainNav").classList.toggle("show");
+    }
+
+    function toggleDropdown() {
+      document.getElementById("profileDropdown").classList.toggle("show");
+    }
+
+    document.addEventListener('click', function (e) {
+      const trigger = document.querySelector('.profile-trigger');
+      const dropdown = document.getElementById('profileDropdown');
+
+      if (!trigger.contains(e.target)) {
+        dropdown.classList.remove('show');
+      }
+    });
+  </script>
+
+  <script src="{% static 'core/main.js' %}" defer></script>
 </body>
 </html>

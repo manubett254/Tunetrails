@@ -15,6 +15,16 @@ urlpatterns = [
     path('teacher/profile/edit/', views.teacher_profile_edit, name='teacher_profile_edit'),
     path('teacher/profile/delete/', views.teacher_profile_delete, name='teacher_profile_delete'),
     path('teachers/<int:teacher_id>/', views.teacher_detail, name='teacher_detail'),
+    path('lessons/request/<int:teacher_id>/', views.request_lesson, name='request_lesson'),
+    path('lessons/<int:lesson_id>/approve/', views.approve_lesson, name='approve_lesson'),
+    path('lessons/<int:lesson_id>/decline/', views.decline_lesson, name='decline_lesson'),
+    path('lessons/<int:lesson_id>/', views.lesson_detail, name='lesson_detail'),
+    path('lessons/<int:lesson_id>/cancel/', views.cancel_lesson_student, name='cancel_lesson'),
+    path('lessons/<int:lesson_id>/cancel/teacher/', views.cancel_lesson_teacher, name='cancel_lesson_teacher'),
+    path('lessons/<int:lesson_id>/cancel/student/', views.cancel_lesson_student, name='cancel_lesson_student'),
+
+
+
 
 
 

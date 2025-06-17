@@ -2,8 +2,8 @@ from urllib import request
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from .forms import UserRegisterForm, TeacherProfileForm
-from .models import TeacherProfile, User
+from .forms import UserRegisterForm, TeacherProfileForm, LessonRequestForm
+from .models import TeacherProfile, Lesson
 from django.http import HttpResponse
 from django.contrib import messages
 
@@ -49,18 +49,48 @@ def home_view(request):
 def student_dashboard(request):
     if request.user.is_teacher:
         return redirect('teacher_dashboard')
-    return render(request, 'core/student_dashboard.html')
 
+    pending_lessons = Lesson.objects.filter(student=request.user, status='pending')
+    approved_lessons = Lesson.objects.filter(student=request.user, status='approved')
+    declined_lessons = Lesson.objects.filter(student=request.user, status='declined')
+    cancelled_lessons = Lesson.objects.filter(
+        student=request.user,
+        status__in=['cancelled_by_student', 'cancelled_by_teacher']
+    )
+
+    return render(request, 'core/student_dashboard.html', {
+        'pending_lessons': pending_lessons,
+        'approved_lessons': approved_lessons,
+        'declined_lessons': declined_lessons,
+        'cancelled_lessons': cancelled_lessons,
+        'assignments': [],  # placeholder
+        'teachers': [],     # placeholder
+    })
 
 @login_required
 def teacher_dashboard(request):
     if not request.user.is_teacher:
         return redirect('student_dashboard')
+
     try:
         request.user.teacherprofile
     except TeacherProfile.DoesNotExist:
         return redirect('teacher_profile')
-    return render(request, 'core/teacher_dashboard.html')
+
+    approved_lessons = Lesson.objects.filter(teacher=request.user, status='approved').order_by('-date')
+    pending_lessons = Lesson.objects.filter(teacher=request.user, status='pending').order_by('-date')
+    declined_lessons = Lesson.objects.filter(teacher=request.user, status='declined').order_by('-date')
+    cancelled_lessons = Lesson.objects.filter(
+        teacher=request.user,
+        status__in=['cancelled_by_student', 'cancelled_by_teacher']
+    ).order_by('-date')
+
+    return render(request, 'core/teacher_dashboard.html', {
+        'approved_lessons': approved_lessons,
+        'pending_lessons': pending_lessons,
+        'declined_lessons': declined_lessons,
+        'cancelled_lessons': cancelled_lessons,
+    })
 
 
 @login_required
@@ -152,3 +182,101 @@ def teacher_detail(request, teacher_id):
         return redirect('teacher_list')
 
     return render(request, 'core/teacher_detail.html', {'teacher': teacher})
+
+@login_required
+def request_lesson(request, teacher_id):
+    if request.user.is_teacher:
+        return redirect('teacher_dashboard')
+
+    try:
+        teacher = TeacherProfile.objects.get(id=teacher_id).user
+    except TeacherProfile.DoesNotExist:
+        return redirect('teacher_list')
+
+    if request.method == 'POST':
+        form = LessonRequestForm(request.POST)
+        if form.is_valid():
+            lesson = form.save(commit=False)
+            lesson.teacher = teacher
+            lesson.student = request.user
+            lesson.save()
+            messages.success(request, "Lesson request sent.")
+            return redirect('student_dashboard')
+    else:
+        form = LessonRequestForm()
+
+    return render(request, 'core/request_lesson.html', {'form': form, 'teacher': teacher})
+
+@login_required
+def lesson_detail(request, lesson_id):
+    lesson = Lesson.objects.get(id=lesson_id)
+
+    # Security: Make sure user is the student or teacher of this lesson
+    if request.user != lesson.student and request.user != lesson.teacher:
+        return redirect('home')
+
+    return render(request, 'core/lesson_detail.html', {'lesson': lesson})
+
+@login_required
+def approve_lesson(request, lesson_id):
+    lesson = Lesson.objects.get(id=lesson_id)
+    if request.user != lesson.teacher:
+        return redirect('teacher_dashboard')
+
+    lesson.status = 'approved'
+    lesson.save()
+    messages.success(request, "Lesson approved.")
+    return redirect('teacher_dashboard')
+
+
+@login_required
+def decline_lesson(request, lesson_id):
+    lesson = Lesson.objects.get(id=lesson_id)
+    if request.user != lesson.teacher:
+        return redirect('teacher_dashboard')
+
+    lesson.status = 'declined'
+    lesson.save()
+    messages.info(request, "Lesson declined.")
+    return redirect('teacher_dashboard')
+
+
+@login_required
+def cancel_lesson_student(request, lesson_id):
+    lesson = Lesson.objects.get(id=lesson_id)
+
+    if lesson.student != request.user:
+        return redirect('student_dashboard')
+
+    if lesson.status == 'pending':
+        lesson.status = 'cancelled_by_student'
+        messages.success(request, "Lesson request cancelled.")
+    elif lesson.status == 'approved':
+        lesson.status = 'cancelled_by_student'
+        messages.success(request, "Lesson cancelled. You may reschedule or pick another teacher.")
+    else:
+        messages.error(request, "You can't cancel this lesson.")
+        return redirect('student_dashboard')
+
+    lesson.save()
+    # TODO: Notify teacher
+    return redirect('student_dashboard')
+
+@login_required
+def cancel_lesson_teacher(request, lesson_id):
+    lesson = Lesson.objects.get(id=lesson_id)
+
+    if lesson.teacher != request.user:
+        return redirect('teacher_dashboard')
+
+    if lesson.status == 'approved':
+        lesson.status = 'cancelled_by_teacher'
+        messages.info(request, "You cancelled this lesson.")
+        # TODO: Notify student
+    else:
+        messages.error(request, "Only approved lessons can be cancelled.")
+        return redirect('teacher_dashboard')
+
+    lesson.save()
+    return redirect('teacher_dashboard')
+
