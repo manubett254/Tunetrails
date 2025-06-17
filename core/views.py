@@ -73,7 +73,7 @@ def teacher_dashboard(request):
         return redirect('student_dashboard')
 
     try:
-        request.user.teacherprofile
+        request.user.tebacherprofile
     except TeacherProfile.DoesNotExist:
         return redirect('teacher_profile')
 
