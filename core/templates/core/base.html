@@ -1,0 +1,18 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>TuneTrails</title>
+    <link rel="stylesheet" href="{% static 'core/main.css' %}">
+</head>
+<body>
+    <nav style="text-align:center; padding:10px;">
+        <a href="{% url 'home' %}">Home</a> |
+        <a href="{% url 'register' %}">Register</a> |
+        <a href="{% url 'login' %}">Login</a> |
+        <a href="{% url 'logout' %}">Logout</a>
+    </nav>
+    <hr>
+    {% block content %}{% endblock %}
+</body>
+</html>

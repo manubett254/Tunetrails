@@ -1,0 +1,10 @@
+{% extends "core/base.html" %}
+{% block content %}
+<div class="container">
+  <h2>Welcome to TuneTrails 🎶</h2>
+  <p style="text-align:center;">
+    <a href="{% url 'register' %}">Register</a> or 
+    <a href="{% url 'login' %}">Login</a> to begin your journey.
+  </p>
+</div>
+{% endblock %}
