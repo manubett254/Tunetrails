@@ -1,0 +1,13 @@
+{% extends "core/base.html" %}
+{% block content %}
+<div class="page-wrapper">
+  <div class="container form-container">
+    <h2>{{ teacher.name }} 🎵</h2>
+    <p><strong>Instruments Taught:</strong> {{ teacher.instruments_taught }}</p>
+    <p><strong>Bio:</strong> {{ teacher.bio }}</p>
+
+    <a href="{% url 'teacher_list' %}" class="btn btn-outline">⬅ Back to List</a>
+    <a href="#" class="btn btn-primary" disabled>📆 Request Lesson (Coming Soon)</a>
+  </div>
+</div>
+{% endblock %}

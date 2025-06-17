@@ -1,0 +1,20 @@
+{% extends "core/base.html" %}
+{% block content %}
+<div class="page-wrapper">
+  <div class="container">
+    <h2>🎓 Available Music Teachers</h2>
+    <div class="teacher-grid">
+      {% for teacher in teachers %}
+        <div class="teacher-card">
+          <h3>{{ teacher.name }}</h3>
+          <p><strong>Instruments:</strong> {{ teacher.instruments_taught }}</p>
+          <p>{{ teacher.bio|truncatechars:100 }}</p>
+          <a href="{% url 'teacher_detail' teacher.id %}" class="btn btn-outline">View Profile</a>
+        </div>
+      {% empty %}
+        <p>No teachers available yet.</p>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

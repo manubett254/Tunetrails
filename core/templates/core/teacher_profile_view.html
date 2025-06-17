@@ -1,0 +1,21 @@
+{% extends "core/base.html" %}
+{% block content %}
+<div class="page-wrapper">
+  <div class="container form-container">
+    <h2>👤 My Profile</h2>
+    <p><strong>Name:</strong> {{ profile.name }}</p>
+    <p><strong>Instruments Taught:</strong>
+    {% for instrument in instruments %}
+        <span>{{ instrument }}</span>{% if not forloop.last %}, {% endif %}
+    {% endfor %}
+    </p>
+
+    <p><strong>Bio:</strong> {{ profile.bio }}</p>
+
+    <div style="margin-top: 20px;">
+      <a href="{% url 'teacher_profile_edit' %}" class="btn btn-outline">✏️ Edit</a>
+      <a href="{% url 'teacher_profile_delete' %}" class="btn btn-outline" onclick="return confirm('Are you sure you want to delete your profile?');">🗑️ Delete</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

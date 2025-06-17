@@ -1,0 +1,57 @@
+{% extends "core/base.html" %}
+{% block content %}
+<div class="page-wrapper">
+    <div class="container">
+        <h2>🎧 Student Dashboard</h2>
+        <p>Welcome, {{ user.username }}!</p>
+        <p>Here you’ll find your enrolled lessons, scheduled classes, and assignments.</p>
+    </div>
+    <div class="container">
+        <h3>Your Lessons</h3>
+        {% if lessons %}
+            <ul class="lesson-list">
+                {% for lesson in lessons %}
+                    <li>
+                        <strong>{{ lesson.title }}</strong> - {{ lesson.date }} at {{ lesson.time }}
+                        <p>{{ lesson.description|truncatechars:100 }}</p>
+                        <a href="{% url 'lesson_detail' lesson.id %}" class="btn btn-outline">View Lesson</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>You are not enrolled in any lessons yet.</p>
+        {% endif %}
+        <h3>Assignments</h3>
+        {% if assignments %}
+            <ul class="assignment-list">
+                {% for assignment in assignments %}
+                    <li>
+                        <strong>{{ assignment.title }}</strong> - Due: {{ assignment.due_date }}
+                        <p>{{ assignment.description|truncatechars:100 }}</p>
+                        <a href="{% url 'assignment_detail' assignment.id %}" class="btn btn-outline">View Assignment</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No assignments available at the moment.</p>
+        {% endif %}
+        <div class="container">
+            <h3>Your Teachers</h3>
+            <a href="{% url 'teacher_list' %}" class="btn btn-outline">View All Teachers</a>
+            {% if teachers %}
+                <ul class="teacher-list">
+                    {% for teacher in teachers %}
+                        <li>
+                            <strong>{{ teacher.name }}</strong>
+                            <p>{{ teacher.bio|truncatechars:100 }}</p>
+                            <a href="{% url 'teacher_detail' teacher.id %}" class="btn btn-outline">View Profile</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No teachers assigned to you at the moment.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
