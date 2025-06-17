@@ -3,10 +3,33 @@
 <div class="page-wrapper">
   <div class="container form-container">
     <h2>{{ lesson.title }}</h2>
+
     <p><strong>Date:</strong> {{ lesson.date }} at {{ lesson.time }}</p>
-    <p><strong>Status:</strong> {{ lesson.status }}</p>
+    <p><strong>Status:</strong> {{ lesson.status|title }}</p>
     <p><strong>Description:</strong></p>
     <p>{{ lesson.description }}</p>
+
+    {% if lesson.status == 'reschedule_requested' %}
+    <hr>
+    <p><strong>⚠️ Reschedule Requested</strong></p>
+    <p>
+      <strong>New Date:</strong> {{ lesson.new_date }}<br>
+      <strong>New Time:</strong> {{ lesson.new_time }}<br>
+      <strong>Requested by:</strong> {{ lesson.reschedule_requested_by.username }}
+    </p>
+
+    {% if user == lesson.teacher %}
+      <form method="post" action="{% url 'approve_reschedule' lesson.id %}" style="display:inline;">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary">Approve</button>
+      </form>
+      <form method="post" action="{% url 'decline_reschedule' lesson.id %}" style="display:inline; margin-left:10px;">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-outline">Decline</button>
+      </form>
+    {% endif %}
+    {% endif %}
+
   </div>
 </div>
 {% endblock %}

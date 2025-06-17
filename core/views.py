@@ -2,8 +2,9 @@ from urllib import request
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from .forms import UserRegisterForm, TeacherProfileForm, LessonRequestForm
-from .models import TeacherProfile, Lesson
+from .forms import UserRegisterForm, TeacherProfileForm, LessonRequestForm , RescheduleLessonForm
+from django.views.decorators.http import require_POST
+from .models import TeacherProfile, Lesson 
 from django.http import HttpResponse
 from django.contrib import messages
 
@@ -280,3 +281,60 @@ def cancel_lesson_teacher(request, lesson_id):
     lesson.save()
     return redirect('teacher_dashboard')
 
+
+
+@login_required
+def reschedule_lesson(request, lesson_id):
+    lesson = Lesson.objects.get(id=lesson_id)
+
+    # Only student or teacher can request reschedule
+    if request.user != lesson.student and request.user != lesson.teacher:
+        return redirect('home')
+
+    if request.method == 'POST':
+        form = RescheduleLessonForm(request.POST, instance=lesson)
+        if form.is_valid():
+            updated = form.save(commit=False)
+            updated.status = 'reschedule_requested'
+            updated.reschedule_requested_by = request.user
+            updated.save()
+            messages.info(request, "Reschedule request submitted.")
+            return redirect('lesson_detail', lesson_id=lesson.id)
+    else:
+        form = RescheduleLessonForm(instance=lesson)
+
+    return render(request, 'core/reschedule_lesson.html', {'form': form, 'lesson': lesson})
+
+
+@require_POST
+@login_required
+def approve_reschedule(request, lesson_id):
+    lesson = Lesson.objects.get(id=lesson_id)
+    if request.user != lesson.teacher:
+        return redirect('home')
+
+    lesson.date = lesson.new_date
+    lesson.time = lesson.new_time
+    lesson.status = 'approved'
+    lesson.new_date = None
+    lesson.new_time = None
+    lesson.reschedule_requested_by = None
+    lesson.save()
+    messages.success(request, "Reschedule approved and updated.")
+    return redirect('lesson_detail', lesson_id=lesson.id)
+
+
+@require_POST
+@login_required
+def decline_reschedule(request, lesson_id):
+    lesson = Lesson.objects.get(id=lesson_id)
+    if request.user != lesson.teacher:
+        return redirect('home')
+
+    lesson.status = 'approved'
+    lesson.new_date = None
+    lesson.new_time = None
+    lesson.reschedule_requested_by = None
+    lesson.save()
+    messages.info(request, "Reschedule request declined.")
+    return redirect('lesson_detail', lesson_id=lesson.id)

@@ -48,3 +48,12 @@ class LessonRequestForm(forms.ModelForm):
         widgets = {
             'date': forms.DateInput(attrs={'type': 'date'}),
         }
+
+class RescheduleLessonForm(forms.ModelForm):
+    class Meta:
+        model = Lesson
+        fields = ['new_date', 'new_time']
+        widgets = {
+            'new_date': forms.DateInput(attrs={'type': 'date'}),
+            'new_time': forms.TimeInput(attrs={'type': 'time'}),
+        }

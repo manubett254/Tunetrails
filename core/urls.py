@@ -22,6 +22,11 @@ urlpatterns = [
     path('lessons/<int:lesson_id>/cancel/', views.cancel_lesson_student, name='cancel_lesson'),
     path('lessons/<int:lesson_id>/cancel/teacher/', views.cancel_lesson_teacher, name='cancel_lesson_teacher'),
     path('lessons/<int:lesson_id>/cancel/student/', views.cancel_lesson_student, name='cancel_lesson_student'),
+    path('lessons/<int:lesson_id>/reschedule/', views.reschedule_lesson, name='reschedule_lesson'),
+    path('lessons/<int:lesson_id>/reschedule/approve/', views.approve_reschedule, name='approve_reschedule'),
+    path('lessons/<int:lesson_id>/reschedule/decline/', views.decline_reschedule, name='decline_reschedule'),
+
+
 
 
 
