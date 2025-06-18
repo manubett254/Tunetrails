@@ -14,9 +14,14 @@
             <li>
               <strong>{{ lesson.title }}</strong><br>
               <small>
+                <strong>Teacher:</strong>
+                <a href="{% url 'teacher_detail' lesson.teacher.teacherprofile.id %}">
+                  {{ lesson.teacher.teacherprofile.name }}
+                </a><br>
                 Status: <span class="status approved">Approved</span><br>
                 {{ lesson.date }} at {{ lesson.time }}
               </small>
+              
               <p>{{ lesson.description|truncatechars:80 }}</p>
               <a href="{% url 'lesson_detail' lesson.id %}" class="btn btn-outline">View</a>
               <a href="{% url 'cancel_lesson_student' lesson.id %}" class="btn btn-outline danger" style="margin-left: 10px;">Cancel</a>
@@ -37,9 +42,13 @@
             <li>
               <strong>{{ lesson.title }}</strong><br>
               <small>
+                <strong>Teacher:</strong>
+                <a href="{% url 'teacher_detail' lesson.teacher.teacherprofile.id %}">
+                  {{ lesson.teacher.teacherprofile.name }}
+                </a><br>
                 Status: <span class="status pending">Pending</span><br>
                 {{ lesson.date }} at {{ lesson.time }}
-              </small>
+              </small>               
               <p>{{ lesson.description|truncatechars:80 }}</p>
               <a href="{% url 'lesson_detail' lesson.id %}" class="btn btn-outline">View</a>
               <a href="{% url 'cancel_lesson_student' lesson.id %}" class="btn btn-outline danger" onclick="return confirm('Cancel this lesson request?');" style="margin-left: 10px;">Cancel</a>
@@ -60,9 +69,14 @@
             <li>
               <strong>{{ lesson.title }}</strong><br>
               <small>
+                <strong>Teacher:</strong>
+                <a href="{% url 'teacher_detail' lesson.teacher.teacherprofile.id %}">
+                  {{ lesson.teacher.teacherprofile.name }}
+                </a><br>
                 Status: <span class="status declined">Declined</span><br>
                 {{ lesson.date }} at {{ lesson.time }}
               </small>
+              
               <p>{{ lesson.description|truncatechars:80 }}</p>
               <a href="{% url 'lesson_detail' lesson.id %}" class="btn btn-outline">View</a>
             </li>
@@ -82,9 +96,14 @@
             <li>
               <strong>{{ lesson.title }}</strong><br>
               <small>
+                <strong>Teacher:</strong>
+                <a href="{% url 'teacher_detail' lesson.teacher.teacherprofile.id %}">
+                  {{ lesson.teacher.teacherprofile.name }}
+                </a><br>
                 Status: <span class="status {{ lesson.status }}">{{ lesson.status|title }}</span><br>
                 {{ lesson.date }} at {{ lesson.time }}
               </small>
+              
               <p>{{ lesson.description|truncatechars:80 }}</p>
               <a href="{% url 'lesson_detail' lesson.id %}" class="btn btn-outline">View</a>
             </li>

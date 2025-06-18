@@ -1,13 +1,36 @@
 {% extends "core/base.html" %}
+{% load socialaccount %}
 {% block content %}
 <div class="page-wrapper">
-<div class="container">
-  <h2>Register</h2>
-  <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Register</button>
-  </form>
-</div>
+  <div class="container" style="max-width: 500px; margin: 0 auto;">
+    <h2 class="text-center">Create Your TuneTrails Account</h2>
+
+    <div style="display: flex; justify-content: center; gap: 1rem; margin: 1.5rem 0;">
+      <a href="{% url 'register_student' %}" class="btn btn--primary">Student</a>
+      <a href="{% url 'register_teacher' %}" class="btn btn--outline">Teacher</a>
+    </div>
+
+    <h4 class="text-center">
+      {% if is_teacher %}
+        Registering as a <strong>Teacher</strong>
+      {% else %}
+        Registering as a <strong>Student</strong>
+      {% endif %}
+    </h4>
+
+    <form method="post" class="form-container">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit" class="btn btn--primary" style="width: 100%;">Create Account</button>
+    </form>
+
+    <div style="text-align: center; margin: 20px 0;">OR</div>
+
+    <div style="text-align: center;">
+      <a href="{% provider_login_url 'google' %}?process=signup" class="btn btn--outline" style="width: 100%;">
+        <i class="fab fa-google"></i> Sign up with Google
+      </a>
+    </div>
+  </div>
 </div>
 {% endblock %}

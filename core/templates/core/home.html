@@ -1,20 +1,216 @@
 {% extends "core/base.html" %}
-{% block content %}
-<div class="page-wrapper">
-    <div class="container">
-        <h2>Welcome to TuneTrails 🎶</h2>
-        
-        {% if user.is_authenticated %}
-            <p style="text-align:center;">
-                Welcome back, {{ user.username }}! 🎉 <br>
-                <a href="{% url 'logout' %}" class="btn btn-outline">Logout</a>
-            </p>
-        {% else %}
-            <p style="text-align:center;">
-                <a href="{% url 'register' %}" class="btn btn-primary">Register</a> or 
-                <a href="{% url 'login' %}" class="btn btn-outline">Login</a> to begin your journey.
-            </p>
-        {% endif %}
+
+{% block hero %}
+<section class="hero">
+  <div class="container">
+    <h1>Master Your Musical Journey</h1>
+    <p>Discover your sound with personalized lessons from world-class instructors</p>
+    {% if not user.is_authenticated %}
+    <div class="hero-buttons">
+      <a href="{% url 'register_student' %}" class="btn btn-primary btn-large">
+        <i class="fas fa-user-graduate"></i> Start Learning
+      </a>
+      <a href="{% url 'register_teacher' %}" class="btn btn-outline btn-large">
+        <i class="fas fa-chalkboard-teacher"></i> Teach With Us
+      </a>
     </div>
-</div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}
+
+{% block content %}
+<!-- Modern Welcome Section -->
+<section class="welcome-section">
+  <div class="container">
+    <div class="welcome-content">
+      <h2 class="section-title">Welcome to TuneTrails <i class="fas fa-music pulse"></i></h2>
+      
+      {% if user.is_authenticated %}
+        <div class="welcome-card">
+          <div class="welcome-header">
+            <h3>Welcome back, <span class="highlight">{{ user.username }}</span>! <span class="welcome-emoji">🎉</span></h3>
+            <p class="subtitle">Continue your musical journey with these options:</p>
+          </div>
+          <div class="action-grid">
+            {% if user.is_teacher %}
+              <a href="{% url 'teacher_dashboard' %}" class="action-card">
+                <div class="action-icon">
+                  <i class="fas fa-tachometer-alt"></i>
+                </div>
+                <h4>Teacher Dashboard</h4>
+                <p>Manage your lessons and students</p>
+                <span class="action-link">Go to Dashboard <i class="fas fa-arrow-right"></i></span>
+              </a>
+            {% else %}
+              <a href="{% url 'student_dashboard' %}" class="action-card">
+                <div class="action-icon">
+                  <i class="fas fa-tachometer-alt"></i>
+                </div>
+                <h4>Student Dashboard</h4>
+                <p>Track your progress and lessons</p>
+                <span class="action-link">Go to Dashboard <i class="fas fa-arrow-right"></i></span>
+              </a>
+            {% endif %}
+            <a href="{% url 'teacher_list' %}" class="action-card">
+              <div class="action-icon">
+                <i class="fas fa-chalkboard-teacher"></i>
+              </div>
+              <h4>Browse Instructors</h4>
+              <p>Find your perfect music teacher</p>
+              <span class="action-link">Explore Teachers <i class="fas fa-arrow-right"></i></span>
+            </a>
+          </div>
+        </div>
+      {% else %}
+        <div class="guest-card">
+          <div class="guest-content">
+            <h3>Start your <span class="highlight">musical adventure</span> today</h3>
+            <p class="subtitle">Join thousands of students learning from the best music instructors worldwide</p>
+            <div class="cta-grid">
+              <a href="{% url 'register_student' %}" class="cta-card primary">
+                <i class="fas fa-user-graduate"></i>
+                <div>
+                  <h4>Student Sign Up</h4>
+                  <p>Begin your learning journey</p>
+                </div>
+              </a>
+              <a href="{% url 'register_teacher' %}" class="cta-card secondary">
+                <i class="fas fa-chalkboard-teacher"></i>
+                <div>
+                  <h4>Teach With Us</h4>
+                  <p>Share your musical expertise</p>
+                </div>
+              </a>
+              <a href="{% url 'login' %}" class="cta-card light">
+                <i class="fas fa-sign-in-alt"></i>
+                <div>
+                  <h4>Login</h4>
+                  <p>Access your account</p>
+                </div>
+              </a>
+            </div>
+          </div>
+          <div class="guest-image">
+            <img src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Music learning" class="rounded-image">
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<!-- Modern Features Section -->
+<section class="features-section">
+  <div class="container">
+    <h2 class="section-title">Why Choose TuneTrails?</h2>
+    <p class="section-subtitle">Experience the difference in music education</p>
+    
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon-wrapper">
+          <i class="fas fa-guitar"></i>
+        </div>
+        <h3>Diverse Instruments</h3>
+        <p>Learn guitar, piano, drums, vocals, and more from expert instructors</p>
+        <div class="feature-decoration"></div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon-wrapper">
+          <i class="fas fa-user-friends"></i>
+        </div>
+        <h3>Personalized Lessons</h3>
+        <p>1-on-1 sessions tailored to your skill level and musical goals</p>
+        <div class="feature-decoration"></div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon-wrapper">
+          <i class="fas fa-calendar-alt"></i>
+        </div>
+        <h3>Flexible Scheduling</h3>
+        <p>Book lessons at times that work with your schedule</p>
+        <div class="feature-decoration"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Modern Testimonials Section -->
+<section class="testimonials-section">
+  <div class="container">
+    <h2 class="section-title">What Our Students Say</h2>
+    <p class="section-subtitle">Hear from our happy community</p>
+    
+    <div class="testimonials-slider">
+      <div class="testimonial-card">
+        <div class="testimonial-rating">
+          <i class="fas fa-star"></i>
+          <i class="fas fa-star"></i>
+          <i class="fas fa-star"></i>
+          <i class="fas fa-star"></i>
+          <i class="fas fa-star"></i>
+        </div>
+        <div class="testimonial-content">
+          <i class="fas fa-quote-left quote-icon"></i>
+          <p>TuneTrails transformed my guitar playing in just 3 months! The personalized approach made all the difference in my learning journey.</p>
+        </div>
+        <div class="testimonial-author">
+          <div class="author-avatar">
+            <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Sarah J.">
+          </div>
+          <div class="author-info">
+            <strong>Sarah J.</strong>
+            <span>Guitar Student</span>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-rating">
+          <i class="fas fa-star"></i>
+          <i class="fas fa-star"></i>
+          <i class="fas fa-star"></i>
+          <i class="fas fa-star"></i>
+          <i class="fas fa-star"></i>
+        </div>
+        <div class="testimonial-content">
+          <i class="fas fa-quote-left quote-icon"></i>
+          <p>The best platform for connecting with quality music teachers. My piano skills improved dramatically with my TuneTrails instructor.</p>
+        </div>
+        <div class="testimonial-author">
+          <div class="author-avatar">
+            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Michael T.">
+          </div>
+          <div class="author-info">
+            <strong>Michael T.</strong>
+            <span>Piano Student</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Stats Section -->
+<section class="stats-section">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-number" data-count="1000">0</div>
+        <div class="stat-label">Happy Students</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" data-count="150">0</div>
+        <div class="stat-label">Expert Teachers</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" data-count="25">0</div>
+        <div class="stat-label">Instruments</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" data-count="5000">0</div>
+        <div class="stat-label">Lessons Taught</div>
+      </div>
+    </div>
+  </div>
+</section>
 {% endblock %}

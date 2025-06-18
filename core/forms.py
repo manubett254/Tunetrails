@@ -2,12 +2,13 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from .models import User, TeacherProfile
 from .models import TeacherProfile, INSTRUMENT_CHOICES, Lesson
-class UserRegisterForm(UserCreationForm):
-    is_teacher = forms.BooleanField(required=False, label="Registering as a teacher?")
 
+# forms.py
+class UserRegisterForm(UserCreationForm):
     class Meta:
         model = User
-        fields = ['username', 'email', 'password1', 'password2', 'is_teacher']
+        fields = ['username', 'email', 'password1', 'password2']
+
 
 class TeacherProfileForm(forms.ModelForm):
     instruments_taught = forms.MultipleChoiceField(

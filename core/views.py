@@ -9,18 +9,28 @@ from django.http import HttpResponse
 from django.contrib import messages
 
 
-def register_view(request):
+def register_student_view(request):
+    return _handle_register(request, is_teacher=False)
+
+def register_teacher_view(request):
+    return _handle_register(request, is_teacher=True)
+
+def _handle_register(request, is_teacher):
     if request.method == 'POST':
         form = UserRegisterForm(request.POST)
         if form.is_valid():
-            user = form.save()
-            if user.is_teacher:
-                return redirect('teacher_profile')  # teacher sets up profile next
-            else:
-                return redirect('student_dashboard')  # student sees list
+            user = form.save(commit=False)
+            user.is_teacher = is_teacher
+            user.save()
+            if is_teacher:
+                return redirect('teacher_profile')
+            return redirect('student_dashboard')
     else:
         form = UserRegisterForm()
-    return render(request, 'core/register.html', {'form': form})
+    return render(request, 'core/register.html', {
+        'form': form,
+        'is_teacher': is_teacher
+    })
 
 def login_view(request):
     if request.method == 'POST':
@@ -74,7 +84,7 @@ def teacher_dashboard(request):
         return redirect('student_dashboard')
 
     try:
-        request.user.tebacherprofile
+        request.user.teacherprofile
     except TeacherProfile.DoesNotExist:
         return redirect('teacher_profile')
 
