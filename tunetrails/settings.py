@@ -174,3 +174,8 @@ ACCOUNT_LOGIN_METHODS = {'username', 'email'}
 SOCIALACCOUNT_LOGIN_ON_GET = True
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+ALLOWED_HOSTS = ['*']  # ⚠️ For development only
+CSRF_TRUSTED_ORIGINS = [
+    'https://90bc-197-136-99-126.ngrok-free.app',  # ✅ Add your Ngrok URL here
+]
