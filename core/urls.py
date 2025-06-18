@@ -5,6 +5,8 @@ urlpatterns = [
     # urls.py
     path('register/student/', views.register_student_view, name='register_student'),
     path('register/teacher/', views.register_teacher_view, name='register_teacher'),
+    path('social/redirect/', views.handle_social_redirect, name='handle_social_redirect'),
+    
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
     path('teacher/profile/', views.teacher_profile_create, name='teacher_profile'),

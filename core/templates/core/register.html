@@ -27,9 +27,10 @@
     <div style="text-align: center; margin: 20px 0;">OR</div>
 
     <div style="text-align: center;">
-      <a href="{% provider_login_url 'google' %}?process=signup" class="btn btn--outline" style="width: 100%;">
+      <a href="{% provider_login_url 'google' process='signup' %}?next={% if is_teacher %}/register/teacher/{% else %}/register/student/{% endif %}" class="btn btn--outline">
         <i class="fab fa-google"></i> Sign up with Google
       </a>
+
     </div>
   </div>
 </div>

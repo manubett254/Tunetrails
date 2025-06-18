@@ -7,6 +7,7 @@ from django.views.decorators.http import require_POST
 from .models import TeacherProfile, Lesson 
 from django.http import HttpResponse
 from django.contrib import messages
+from django.contrib.auth.models import Group
 
 
 def register_student_view(request):
@@ -16,12 +17,15 @@ def register_teacher_view(request):
     return _handle_register(request, is_teacher=True)
 
 def _handle_register(request, is_teacher):
+    print(f"Handling register request, is_teacher={is_teacher}")  # Debug
     if request.method == 'POST':
         form = UserRegisterForm(request.POST)
         if form.is_valid():
+            print("Form is valid")  # Debug
             user = form.save(commit=False)
             user.is_teacher = is_teacher
             user.save()
+            print(f"User created, is_teacher={user.is_teacher}")  # Debug
             if is_teacher:
                 return redirect('teacher_profile')
             return redirect('student_dashboard')
@@ -54,7 +58,20 @@ def logout_view(request):
 def home_view(request):
     return render(request, 'core/home.html')
 
+def handle_social_redirect(request):
+    next_url = request.GET.get('next', '')
 
+    if '/register/teacher/' in next_url:
+        request.user.is_teacher = True
+        request.user.save()  # Don't forget to save!
+        return redirect('teacher_dashboard')
+
+    if '/register/student/' in next_url:
+        request.user.is_teacher = False
+        request.user.save()  # Don't forget to save!
+        return redirect('student_dashboard')
+
+    return redirect('student_dashboard')
 
 @login_required
 def student_dashboard(request):

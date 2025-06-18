@@ -35,7 +35,7 @@ INSTALLED_APPS = [
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
-    'django.contrib.sites',
+    'django.contrib.sites',  # Required!
     "django.contrib.messages",
     "django.contrib.staticfiles",
     # Allauth
@@ -51,11 +51,10 @@ INSTALLED_APPS = [
 ]
 
 SITE_ID = 1
-
-AUTHENTICATION_BACKENDS = (
+AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
-)
+]
 
 
 MIDDLEWARE = [
@@ -74,7 +73,7 @@ ROOT_URLCONF = "tunetrails.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        'DIRS': [BASE_DIR / 'core' / 'templates'],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -153,12 +152,23 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 MEDIA_URL = '/media/'
 
 LOGIN_URL = '/login/'
-LOGIN_REDIRECT_URL = '/student/dashboard/'
-LOGOUT_REDIRECT_URL = '/'
-LOGIN_REDIRECT_URL = '/student/dashboard/'  # or your preferred path
-ACCOUNT_LOGOUT_REDIRECT_URL = '/'
- #for development purposes, you can set this to 'none' to skip email verification
- #in production, you should set this to 'mandatory' or 'optional' based on your requirements
-ACCOUNT_EMAIL_VERIFICATION = 'none'
-ACCOUNT_EMAIL_REQUIRED = True
-SOCIALACCOUNT_EMAIL_VERIFICATION = 'none'
+
+from django.urls import reverse_lazy
+
+LOGIN_REDIRECT_URL = reverse_lazy('handle_social_redirect')
+
+
+
+ACCOUNT_LOGOUT_REDIRECT_URL = '/login/'
+
+# Optional: Allauth config to suppress email verification
+ACCOUNT_EMAIL_VERIFICATION = "none"
+
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
+
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'username*', 'password1*', 'password2*']
+ACCOUNT_LOGIN_METHODS = {'username', 'email'}
+
+SOCIALACCOUNT_LOGIN_ON_GET = True

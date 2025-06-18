@@ -532,3 +532,29 @@ a {
   background-color: #c0392b;
   border-color: #c0392b;
 }
+
+.btn--google {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  color: #444;
+  border: 1px solid #ccc;
+  border-radius: var(--radius-full);
+  font-weight: 500;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  width: 100%;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn--google i {
+  font-size: 1rem;
+  color: #ea4335;
+}
+
+.btn--google:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
