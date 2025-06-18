@@ -2,12 +2,13 @@ from urllib import request
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from .forms import UserRegisterForm, TeacherProfileForm, LessonRequestForm , RescheduleLessonForm
+from .forms import UserRegisterForm, TeacherProfileForm, LessonRequestForm , RescheduleLessonForm , LessonProgressForm
 from django.views.decorators.http import require_POST
 from .models import TeacherProfile, Lesson 
 from django.http import HttpResponse
 from django.contrib import messages
 from django.contrib.auth.models import Group
+from django.core.mail import send_mail
 
 
 def register_student_view(request):
@@ -228,12 +229,23 @@ def request_lesson(request, teacher_id):
             lesson.teacher = teacher
             lesson.student = request.user
             lesson.save()
+
+            # ✅ Send email to teacher
+            send_mail(
+                subject='New Lesson Request on TuneTrails',
+                message=f'Hi {teacher.username},\n\nYou’ve received a new lesson request from {request.user.username}.\n\nLesson: {lesson.title}\nDescription: {lesson.description}\n\nPlease log in to your dashboard to respond.',
+                from_email='noreply@tunetrails.com',
+                recipient_list=[teacher.email],
+                fail_silently=True
+            )
+
             messages.success(request, "Lesson request sent.")
             return redirect('student_dashboard')
     else:
         form = LessonRequestForm()
 
     return render(request, 'core/request_lesson.html', {'form': form, 'teacher': teacher})
+
 
 @login_required
 def lesson_detail(request, lesson_id):
@@ -365,3 +377,33 @@ def decline_reschedule(request, lesson_id):
     lesson.save()
     messages.info(request, "Reschedule request declined.")
     return redirect('lesson_detail', lesson_id=lesson.id)
+
+
+@login_required
+def teacher_students_view(request):
+    if not request.user.is_teacher:
+        return redirect('student_dashboard')
+    
+    lessons = Lesson.objects.filter(teacher=request.user, status='approved')
+    students = set(lesson.student for lesson in lessons)
+    
+    return render(request, 'core/teacher_students.html', {'students': students})
+
+
+@login_required
+def add_progress_note(request, lesson_id):
+    lesson = Lesson.objects.get(id=lesson_id)
+
+    if request.user != lesson.teacher:
+        return redirect('teacher_dashboard')
+
+    if request.method == 'POST':
+        form = LessonProgressForm(request.POST, instance=lesson)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Progress note saved.")
+            return redirect('lesson_detail', lesson_id=lesson.id)
+    else:
+        form = LessonProgressForm(instance=lesson)
+
+    return render(request, 'core/add_progress_note.html', {'form': form, 'lesson': lesson})

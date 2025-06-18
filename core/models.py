@@ -50,7 +50,7 @@ class Lesson(models.Model):
     student = models.ForeignKey(User, on_delete=models.CASCADE, related_name='lessons_requested')
     status = models.CharField(max_length=30, choices=STATUS_CHOICES, default='pending')
     created_at = models.DateTimeField(default=timezone.now)
-
+    progress_note = models.TextField(blank=True, null=True)
     reschedule_requested_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='reschedule_requests')
     new_date = models.DateField(null=True, blank=True)
     new_time = models.TimeField(null=True, blank=True)

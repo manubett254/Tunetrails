@@ -6,7 +6,7 @@ urlpatterns = [
     path('register/student/', views.register_student_view, name='register_student'),
     path('register/teacher/', views.register_teacher_view, name='register_teacher'),
     path('social/redirect/', views.handle_social_redirect, name='handle_social_redirect'),
-    
+
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
     path('teacher/profile/', views.teacher_profile_create, name='teacher_profile'),
@@ -29,12 +29,8 @@ urlpatterns = [
     path('lessons/<int:lesson_id>/reschedule/', views.reschedule_lesson, name='reschedule_lesson'),
     path('lessons/<int:lesson_id>/reschedule/approve/', views.approve_reschedule, name='approve_reschedule'),
     path('lessons/<int:lesson_id>/reschedule/decline/', views.decline_reschedule, name='decline_reschedule'),
-
-
-
-
-
-
+    path('teacher/students/', views.teacher_students_view, name='teacher_students'),
+    path('lessons/<int:lesson_id>/progress/', views.add_progress_note, name='add_progress_note'),
 
 
 

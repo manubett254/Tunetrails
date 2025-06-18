@@ -58,3 +58,11 @@ class RescheduleLessonForm(forms.ModelForm):
             'new_date': forms.DateInput(attrs={'type': 'date'}),
             'new_time': forms.TimeInput(attrs={'type': 'time'}),
         }
+
+class LessonProgressForm(forms.ModelForm):
+    class Meta:
+        model = Lesson
+        fields = ['progress_note']
+        widgets = {
+            'progress_note': forms.Textarea(attrs={'rows': 4, 'placeholder': 'Write progress or feedback...'}),
+        }

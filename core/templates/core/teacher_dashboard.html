@@ -4,7 +4,25 @@
   <div class="container">
     <h2>🎹 Welcome, {{ user.username }}</h2>
     <p>This is your teacher dashboard. Manage your lesson requests, schedules, and updates.</p>
+    <div class="container" style="max-width: 800px; margin: auto;">
+  <h2 class="text-center">Your Students</h2>
 
+  {% if students %}
+    <ul class="card-list">
+      {% for student in students %}
+        <li class="card">
+          <div class="card-body">
+            <h4>{{ student.username }}</h4>
+            <p>Email: {{ student.email }}</p>
+            <!-- Placeholder: Could later show progress or last lesson -->
+          </div>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No students found yet.</p>
+  {% endif %}
+</div>
     <!-- APPROVED LESSONS -->
     <div class="dashboard-section">
       <h3>✅ Approved Lessons</h3>

@@ -18,16 +18,21 @@
       <strong>Requested by:</strong> {{ lesson.reschedule_requested_by.username }}
     </p>
 
-    {% if user == lesson.teacher %}
-      <form method="post" action="{% url 'approve_reschedule' lesson.id %}" style="display:inline;">
-        {% csrf_token %}
-        <button type="submit" class="btn btn-primary">Approve</button>
-      </form>
-      <form method="post" action="{% url 'decline_reschedule' lesson.id %}" style="display:inline; margin-left:10px;">
-        {% csrf_token %}
-        <button type="submit" class="btn btn-outline">Decline</button>
-      </form>
+            {% if user == lesson.teacher %}
+          <a href="{% url 'add_progress_note' lesson.id %}" class="btn btn--outline">Add/Edit Progress Note</a>
+        {% endif %}
+    {% if user == lesson.student %}
+  <div class="lesson-progress">
+    <h4>Teacher's Feedback</h4>
+    {% if lesson.progress_note %}
+      <p>{{ lesson.progress_note }}</p>
+    {% else %}
+      <p>No progress note yet.</p>
     {% endif %}
+  </div>
+{% endif %}
+
+
     {% endif %}
 
   </div>
