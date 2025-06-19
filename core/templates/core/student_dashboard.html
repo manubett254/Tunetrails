@@ -132,6 +132,25 @@
         <p class="muted">No assignments at the moment.</p>
       {% endif %}
     </div>
+    <!-- MY ENROLLED COURSES -->
+<div class="dashboard-section">
+  <h3>🎓 My Enrolled Courses</h3>
+  {% if enrolled_courses %}
+    <ul class="course-list">
+      {% for course in enrolled_courses %}
+        <li>
+          <strong>{{ course.title }}</strong><br>
+          <small>Teacher: {{ course.teacher.username }}</small><br>
+          <p>{{ course.description|truncatechars:80 }}</p>
+          <a href="{% url 'course_detail' course.id %}" class="btn btn-outline">View Course</a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="muted">You're not enrolled in any courses yet.</p>
+  {% endif %}
+</div>
+
 
     <!-- EXPLORE TEACHERS -->
     <div class="dashboard-section">

@@ -2,9 +2,9 @@ from urllib import request
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from .forms import UserRegisterForm, TeacherProfileForm, LessonRequestForm , RescheduleLessonForm , LessonProgressForm
+from .forms import UserRegisterForm, TeacherProfileForm, LessonRequestForm , RescheduleLessonForm , LessonProgressForm,CourseForm, CourseLessonForm
 from django.views.decorators.http import require_POST
-from .models import TeacherProfile, Lesson 
+from .models import TeacherProfile, Lesson ,Course, CourseLesson
 from django.http import HttpResponse
 from django.contrib import messages
 from django.contrib.auth.models import Group
@@ -86,6 +86,10 @@ def student_dashboard(request):
         student=request.user,
         status__in=['cancelled_by_student', 'cancelled_by_teacher']
     )
+      # NEW: fetch enrolled courses
+    enrolled_courses = Course.objects.filter(courseenrollment__user=request.user)
+
+
 
     return render(request, 'core/student_dashboard.html', {
         'pending_lessons': pending_lessons,
@@ -94,6 +98,7 @@ def student_dashboard(request):
         'cancelled_lessons': cancelled_lessons,
         'assignments': [],  # placeholder
         'teachers': [],     # placeholder
+        'enrolled_courses': enrolled_courses,
     })
 
 @login_required
@@ -114,11 +119,15 @@ def teacher_dashboard(request):
         status__in=['cancelled_by_student', 'cancelled_by_teacher']
     ).order_by('-date')
 
+    # 🆕 Fetch courses
+    courses = Course.objects.filter(teacher=request.user).order_by('-created_at')
+
     return render(request, 'core/teacher_dashboard.html', {
         'approved_lessons': approved_lessons,
         'pending_lessons': pending_lessons,
         'declined_lessons': declined_lessons,
         'cancelled_lessons': cancelled_lessons,
+        'courses': courses,  # pass to template
     })
 
 
@@ -407,3 +416,89 @@ def add_progress_note(request, lesson_id):
         form = LessonProgressForm(instance=lesson)
 
     return render(request, 'core/add_progress_note.html', {'form': form, 'lesson': lesson})
+
+
+@login_required
+def upload_course(request):
+    if not request.user.is_teacher:
+        return redirect('student_dashboard')
+
+    if request.method == 'POST':
+        form = CourseForm(request.POST)
+        if form.is_valid():
+            course = form.save(commit=False)
+            course.teacher = request.user
+            course.save()
+            messages.success(request, 'Course uploaded successfully!')
+            return redirect('teacher_dashboard')
+    else:
+        form = CourseForm()
+    return render(request, 'core/upload_course.html', {'form': form})
+
+
+@login_required
+def add_lesson_to_course(request, course_id):
+    if not request.user.is_teacher:
+        return redirect('student_dashboard')
+
+    course = Course.objects.get(id=course_id)
+
+    if request.method == 'POST':
+        form = CourseLessonForm(request.POST, request.FILES)
+        if form.is_valid():
+            lesson = form.save(commit=False)
+            lesson.course = course
+            lesson.save()
+            messages.success(request, 'Lesson added successfully!')
+            return redirect('add_lesson', course_id=course.id)
+    else:
+        form = CourseLessonForm()
+    return render(request, 'core/add_lesson.html', {'form': form, 'course': course})
+
+
+def course_list(request):
+    courses = Course.objects.all()
+    return render(request, 'core/course_list.html', {'courses': courses})
+
+
+def course_detail(request, course_id):
+    course = Course.objects.get(id=course_id)
+    lessons = CourseLesson.objects.filter(course=course)
+    return render(request, 'core/course_detail.html', {'course': course, 'lessons': lessons})
+
+@login_required
+def course_create(request):
+    if not request.user.is_teacher:
+        return redirect('student_dashboard')
+
+    if request.method == 'POST':
+        form = CourseForm(request.POST, request.FILES)
+        if form.is_valid():
+            course = form.save(commit=False)
+            course.teacher = request.user
+            course.save()
+            messages.success(request, "Course created successfully!")
+            return redirect('teacher_dashboard')
+    else:
+        form = CourseForm()
+
+    return render(request, 'core/course_form.html', {'form': form})
+
+from django.shortcuts import redirect
+
+from .models import CourseEnrollment
+
+@login_required
+def enroll_course(request, course_id):
+    course = Course.objects.get(id=course_id)
+    # Prevent duplicate enrollments
+    enrollment, created = CourseEnrollment.objects.get_or_create(
+        user=request.user, course=course
+    )
+
+    if created:
+        messages.success(request, "You are now enrolled in this course!")
+    else:
+        messages.info(request, "You're already enrolled in this course.")
+
+    return redirect('course_detail', course_id=course_id)

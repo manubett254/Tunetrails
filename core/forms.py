@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from .models import User, TeacherProfile
 from .models import TeacherProfile, INSTRUMENT_CHOICES, Lesson
+from .models import Course, CourseLesson
 
 # forms.py
 class UserRegisterForm(UserCreationForm):
@@ -66,3 +67,16 @@ class LessonProgressForm(forms.ModelForm):
         widgets = {
             'progress_note': forms.Textarea(attrs={'rows': 4, 'placeholder': 'Write progress or feedback...'}),
         }
+
+# forms.py
+
+
+class CourseForm(forms.ModelForm):
+    class Meta:
+        model = Course
+        fields = ['title', 'description', 'price']
+
+class CourseLessonForm(forms.ModelForm):
+    class Meta:
+        model = CourseLesson
+        fields = ['title', 'description', 'video', 'material', 'youtube_url', 'order']

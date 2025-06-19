@@ -1,0 +1,28 @@
+{% extends 'core/base.html' %}
+{% block content %}
+<div class="page-wrapper">
+  <div class="container">
+    <h2>📚 Available Courses</h2>
+
+    {% if courses %}
+      <ul class="card-list">
+        {% for course in courses %}
+          <li class="card">
+            <div class="card-body">
+              <h4>{{ course.title }}</h4>
+              <p>{{ course.description|truncatechars:100 }}</p>
+              <small>Teacher: {{ course.teacher.username }}</small><br>
+              <strong>Price:</strong> $ {{ course.price }}
+              <div style="margin-top: 0.5rem;">
+                <a href="{% url 'course_detail' course.id %}" class="btn btn-outline">View Course</a>
+              </div>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>No courses available at the moment.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

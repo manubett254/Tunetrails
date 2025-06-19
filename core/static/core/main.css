@@ -558,3 +558,47 @@ a {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
+
+
+.dashboard-section {
+  background: #fff;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 30px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.lesson-list li,
+.course-list li {
+  border-bottom: 1px solid #eee;
+  padding: 10px 0;
+  list-style: none;
+}
+
+.status {
+  font-weight: bold;
+  padding: 3px 7px;
+  border-radius: 5px;
+}
+
+.status.approved {
+  background-color: #d1e7dd;
+  color: #0f5132;
+}
+
+.status.pending {
+  background-color: #fff3cd;
+  color: #664d03;
+}
+
+.status.declined {
+  background-color: #f8d7da;
+  color: #842029;
+}
+
+.status.cancelled_by_student,
+.status.cancelled_by_teacher {
+  background-color: #f5c2c7;
+  color: #58151c;
+}
+

@@ -1,0 +1,63 @@
+{% extends 'core/base.html' %}
+{% load custom_filters %}
+{% csrf_token %}
+{% load static %}
+{% load i18n %}
+{% block content %}
+<div class="page-wrapper">
+  <div class="container">
+    <h2>{{ course.title }}</h2>
+<p>{{ course.description }}</p>
+
+<h3>Lessons</h3>
+{% for lesson in lessons %}
+  <div class="lesson-card">
+    <h4>{{ lesson.title }}</h4>
+    <p>{{ lesson.description }}</p>
+
+    {% if lesson.youtube_url %}
+      <h4>Video Preview</h4>
+  <div class="video-wrapper" style="margin-bottom: 1rem;">
+    <iframe width="560" height="315" src="{{ lesson.youtube_url|youtube_embed }}" frameborder="0" allowfullscreen></iframe>
+  </div>
+    {% elif lesson.video %}
+      <video width="560" height="315" controls>
+        <source src="{{ lesson.video.url }}" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
+    {% endif %}
+
+    {% if lesson.material %}
+      <p><a href="{{ lesson.material.url }}" target="_blank">Download Material</a></p>
+    {% endif %}
+  </div>
+{% endfor %}
+    <h3>Course Details</h3>
+    <p><strong>Teacher:</strong> {{ course.teacher.username }}</p>
+    <p><strong>Price:</strong> $ {{ course.price }}</p>
+
+    {% if user.is_authenticated %}
+      <form method="post" action="{% url 'enroll_course' course.id %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary">Enroll in Course</button>
+      </form>
+      {% if messages %}
+  {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+  {% endfor %}
+{% endif %}
+    {% if user.is_teacher %}
+      <p>You are the teacher of this course.</p>
+    {% elif user in course.students.all %}
+      <p>You are already enrolled in this course.</p>
+    {% else %}
+      <p>You can enroll in this course to access all lessons and materials.</p>
+    {% endif %}
+    {% else %}
+      <p>Please <a href="{% url 'login' %}">log in</a> to enroll in this course.</p>
+    {% endif %}
+  </div>
+
+    
+</div>
+{% endblock %}

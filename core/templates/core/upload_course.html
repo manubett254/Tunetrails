@@ -1,0 +1,18 @@
+{% extends 'core/base.html' %}
+{% block content %}
+<div class="page-wrapper">
+  <div class="container" style="max-width: 600px; margin: auto;">
+    <h2>📚 Upload a New Course</h2>
+
+    <form method="post">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit" class="btn btn-primary" style="width: 100%;">Upload Course</button>
+    </form>
+
+    <div style="margin-top: 1rem;">
+      <a href="{% url 'teacher_dashboard' %}" class="btn btn-outline">Back to Dashboard</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

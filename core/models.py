@@ -1,7 +1,8 @@
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser ,User
 from django.db import models
 from django.contrib.postgres.fields import ArrayField  # only for PostgreSQL
 from django.utils import timezone
+from django.conf import settings
 
 INSTRUMENT_CHOICES = [
     ('piano', 'Piano'),
@@ -57,3 +58,34 @@ class Lesson(models.Model):
     
     def __str__(self):
         return f"{self.title} - {self.student.username} → {self.teacher.username}"
+
+
+
+
+class Course(models.Model):
+    teacher = models.ForeignKey(User, on_delete=models.CASCADE)
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+    price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)  # ✅ ADD THIS LINE
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title
+
+
+class CourseLesson(models.Model):
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='lessons')
+    title = models.CharField(max_length=200)
+    description = models.TextField(blank=True)
+    video = models.FileField(upload_to='lesson_videos/', blank=True, null=True)
+    material = models.FileField(upload_to='lesson_materials/', blank=True, null=True)
+    youtube_url = models.URLField(blank=True, null=True)
+    order = models.PositiveIntegerField(default=1)
+
+    def __str__(self):
+        return f"{self.course.title} - {self.title}"
+
+class CourseEnrollment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    enrolled_at = models.DateTimeField(auto_now_add=True)
