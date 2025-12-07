@@ -113,6 +113,32 @@
         <p class="muted">No cancelled lessons.</p>
       {% endif %}
     </div>
+    <!-- COMPLETED LESSONS -->
+<div class="dashboard-section">
+  <h3>✅ Completed Lessons</h3>
+  {% if completed_lessons %}
+    <ul class="lesson-list">
+      {% for lesson in completed_lessons %}
+        <li>
+          <strong>{{ lesson.title }}</strong><br>
+          <small>
+            <strong>Teacher:</strong>
+            <a href="{% url 'teacher_detail' lesson.teacher.teacherprofile.id %}">
+              {{ lesson.teacher.teacherprofile.name }}
+            </a><br>
+            Status: <span class="status completed">Completed</span><br>
+            {{ lesson.date }} at {{ lesson.time }}
+          </small>
+
+          <p>{{ lesson.description|truncatechars:80 }}</p>
+          <a href="{% url 'lesson_detail' lesson.id %}" class="btn btn-outline">View</a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="muted">No completed lessons yet.</p>
+  {% endif %}
+</div>
 
     <!-- ASSIGNMENTS -->
     <div class="dashboard-section">

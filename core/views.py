@@ -88,6 +88,7 @@ def student_dashboard(request):
     )
       # NEW: fetch enrolled courses
     enrolled_courses = Course.objects.filter(courseenrollment__user=request.user)
+    completed_lessons = Lesson.objects.filter(student=request.user, status='completed')
 
 
 
@@ -99,35 +100,40 @@ def student_dashboard(request):
         'assignments': [],  # placeholder
         'teachers': [],     # placeholder
         'enrolled_courses': enrolled_courses,
+        'completed_lessons': completed_lessons,
     })
+
+from collections import defaultdict
 
 @login_required
 def teacher_dashboard(request):
-    if not request.user.is_teacher:
-        return redirect('student_dashboard')
+    teacher = request.user
 
-    try:
-        request.user.teacherprofile
-    except TeacherProfile.DoesNotExist:
-        return redirect('teacher_profile')
-
-    approved_lessons = Lesson.objects.filter(teacher=request.user, status='approved').order_by('-date')
-    pending_lessons = Lesson.objects.filter(teacher=request.user, status='pending').order_by('-date')
-    declined_lessons = Lesson.objects.filter(teacher=request.user, status='declined').order_by('-date')
+    approved_lessons = Lesson.objects.filter(teacher=teacher, status='approved').order_by('-date')
+    pending_lessons = Lesson.objects.filter(teacher=teacher, status='pending').order_by('-date')
+    declined_lessons = Lesson.objects.filter(teacher=teacher, status='declined').order_by('-date')
     cancelled_lessons = Lesson.objects.filter(
-        teacher=request.user,
+        teacher=teacher,
         status__in=['cancelled_by_student', 'cancelled_by_teacher']
     ).order_by('-date')
 
-    # 🆕 Fetch courses
-    courses = Course.objects.filter(teacher=request.user).order_by('-created_at')
+    # Group students and their approved lesson count
+    student_lesson_counts = defaultdict(int)
+    for lesson in approved_lessons:
+        student_lesson_counts[lesson.student] += 1
+
+    # Pass as a list of dicts
+    students = [{"user": s, "count": c} for s, c in student_lesson_counts.items()]
+
+    courses = Course.objects.filter(teacher=teacher).order_by('-created_at')
 
     return render(request, 'core/teacher_dashboard.html', {
-        'approved_lessons': approved_lessons,
-        'pending_lessons': pending_lessons,
-        'declined_lessons': declined_lessons,
-        'cancelled_lessons': cancelled_lessons,
-        'courses': courses,  # pass to template
+        "approved_lessons": approved_lessons,
+        "pending_lessons": pending_lessons,
+        "declined_lessons": declined_lessons,
+        "cancelled_lessons": cancelled_lessons,
+        "students": students,
+        "courses": courses,
     })
 
 
@@ -275,6 +281,21 @@ def approve_lesson(request, lesson_id):
     lesson.status = 'approved'
     lesson.save()
     messages.success(request, "Lesson approved.")
+    return redirect('teacher_dashboard')
+
+from django.views.decorators.http import require_POST
+
+@require_POST
+@login_required
+def mark_lesson_complete(request, lesson_id):
+    lesson = Lesson.objects.get(id=lesson_id)
+
+    if request.user != lesson.teacher:
+        return redirect('teacher_dashboard')
+
+    lesson.is_completed = True
+    lesson.save()
+    messages.success(request, f"{lesson.title} marked as completed.")
     return redirect('teacher_dashboard')
 
 
@@ -455,12 +476,12 @@ def add_lesson_to_course(request, course_id):
         form = CourseLessonForm()
     return render(request, 'core/add_lesson.html', {'form': form, 'course': course})
 
-
+@login_required
 def course_list(request):
     courses = Course.objects.all()
     return render(request, 'core/course_list.html', {'courses': courses})
 
-
+@login_required
 def course_detail(request, course_id):
     course = Course.objects.get(id=course_id)
     lessons = CourseLesson.objects.filter(course=course)
@@ -502,3 +523,4 @@ def enroll_course(request, course_id):
         messages.info(request, "You're already enrolled in this course.")
 
     return redirect('course_detail', course_id=course_id)
+

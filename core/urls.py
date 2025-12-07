@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     # urls.py
@@ -31,6 +32,8 @@ urlpatterns = [
     path('lessons/<int:lesson_id>/reschedule/decline/', views.decline_reschedule, name='decline_reschedule'),
     path('teacher/students/', views.teacher_students_view, name='teacher_students'),
     path('lessons/<int:lesson_id>/progress/', views.add_progress_note, name='add_progress_note'),
+    path('lesson/<int:lesson_id>/complete/', views.mark_lesson_complete, name='mark_lesson_complete'),
+
 
 
     path('courses/', views.course_list, name='course_list'),
@@ -40,6 +43,10 @@ urlpatterns = [
     path('courses/<int:course_id>/add-lesson/', views.add_lesson_to_course, name='add_lesson'),
     path('courses/<int:course_id>/enroll/', views.enroll_course, name='enroll_course'),
 
+    path('password_reset/', auth_views.PasswordResetView.as_view(), name='password_reset'),
+    path('password_reset/done/', auth_views.PasswordResetDoneView.as_view(), name='password_reset_done'),
+    path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
+    path('reset/done/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
 
 
 ]

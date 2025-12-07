@@ -7,21 +7,22 @@
     <div class="container" style="max-width: 800px; margin: auto;">
   <h2 class="text-center">Your Students</h2>
 
-  {% if students %}
-    <ul class="card-list">
-      {% for student in students %}
-        <li class="card">
-          <div class="card-body">
-            <h4>{{ student.username }}</h4>
-            <p>Email: {{ student.email }}</p>
-            <!-- Placeholder: Could later show progress or last lesson -->
-          </div>
-        </li>
-      {% endfor %}
-    </ul>
-  {% else %}
-    <p>No students found yet.</p>
-  {% endif %}
+ {% if students %}
+  <ul class="card-list">
+    {% for entry in students %}
+      <li class="card">
+        <div class="card-body">
+          <h4>{{ entry.user.username }}</h4>
+          <p>Email: {{ entry.user.email }}</p>
+          <p>Lessons: {{ entry.count }}</p>
+        </div>
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>No students found yet.</p>
+{% endif %}
+
 </div>
     <!-- APPROVED LESSONS -->
     <div class="dashboard-section">
@@ -39,6 +40,15 @@
               <a href="{% url 'lesson_detail' lesson.id %}" class="btn btn-outline">View</a>
               <a href="{% url 'cancel_lesson_teacher' lesson.id %}" class="btn btn-outline danger" style="margin-left: 10px;">Cancel</a>
             </li>
+            {% if not lesson.is_completed %}
+              <form method="post" action="{% url 'mark_lesson_complete' lesson.id %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-sm btn-primary">✅ Mark Completed</button>
+              </form>
+            {% else %}
+              <span class="status approved">✔ Completed</span>
+            {% endif %}
+
           {% endfor %}
         </ul>
       {% else %}

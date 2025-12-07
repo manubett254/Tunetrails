@@ -55,6 +55,8 @@ class Lesson(models.Model):
     reschedule_requested_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='reschedule_requests')
     new_date = models.DateField(null=True, blank=True)
     new_time = models.TimeField(null=True, blank=True)
+    is_completed = models.BooleanField(default=False)
+
     
     def __str__(self):
         return f"{self.title} - {self.student.username} → {self.teacher.username}"
